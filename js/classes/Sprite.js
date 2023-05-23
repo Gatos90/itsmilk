@@ -4,7 +4,7 @@ class Sprite {
       imageSrc,
       frameRate = 1,
       animations,
-      frameBuffer = 2,
+      frameBuffer = 20,
       loop = true,
       autoplay = true,
     }) {

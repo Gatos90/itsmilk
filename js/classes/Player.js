@@ -44,7 +44,6 @@ class Player extends Sprite {
   }
 
   switchSprite(name) {
-    console.log(name)
     if (this.image === this.animations[name].image) return
     this.currentFrame = 0
     this.image = this.animations[name].image
@@ -63,6 +62,9 @@ class Player extends Sprite {
       width: 50,
       height: 53,
     };
+
+    c.fillStyle = 'rgba(255, 0, 0, 0.1)';
+    c.fillRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height);
   }
 
   checkForHorizontalCollisions() {
@@ -106,7 +108,7 @@ class Player extends Sprite {
   checkForVerticalCollisions() {
     for (let i = 0; i < this.collisionBlocks.length; i++) {
       const collisionBlock = this.collisionBlocks[i];
-
+  
       // if a collision exists
       if (
         this.hitbox.position.x <=

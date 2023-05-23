@@ -1,8 +1,8 @@
 class CollisionBlock {
     constructor({ position, imageSrc }) {
       this.position = position;
-      this.width = 64;
-      this.height = 64;
+      this.width = 16;
+      this.height = 16;
     }
   
     draw() {

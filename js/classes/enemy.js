@@ -1,69 +1,88 @@
-// Define a class called "Player"
-class Player extends Sprite {
+class Enemy extends Sprite {
   constructor({
     collisionBlocks = [],
-    imageSrc, // Define an optional parameter for the constructor called "collisionBlocks" with a default value of an empty array
+    imageSrc,
     frameRate,
     animations,
   }) {
     super({ imageSrc, frameRate, animations });
-    // Set the initial position and size of the player object
+
+
     this.position = {
-      x: 200,
+      x: 600,
       y: 200,
     };
     this.velocity = {
-      x: 0,
-      y: 1,
+      x: 1, // The enemy always moves horizontally
+      y: 0,
     };
 
-    // Calculate the position of the bottom side of the player object
     this.sides = {
-      bottom: this.position.y + this.height, // Add a sides property to keep track of the bottom side of the player object
+      bottom: this.position.y + this.height,
     };
-    this.collisionBlocks = collisionBlocks; // Assign the value of collisionBlocks to a property called "collisionBlocks" of the current object
-    // Set the gravity value for the player object
-    this.gravity = 1; // Set the value of gravity for the player object
-    this.isJumping = false; // Set isJumping boolean flag to false initially
-    this.runningSpeed = 5; // Set running speed to 5 for the player object
+    this.collisionBlocks = collisionBlocks;
+    this.gravity = 1;
+
+    this.movingRight = false; // The direction in which the enemy is currently moving
   }
 
-  // Update the position of the player object
   update() {
-  
-    // Change the position of the player object by its velocity in the y direction
+    // Update the enemy's velocity based on its direction of movement
+    this.velocity.x = this.movingRight ? 1 : -1;
+    this.movingRight ? this.switchSprite("runRight") : this.switchSprite("runLeft");
+    // Update the enemy's position
     this.position.x += this.velocity.x;
+    
     this.updateHitbox();
-
     this.checkForHorizontalCollisions();
     this.applyGravity();
     this.updateHitbox();
-
     this.checkForVerticalCollisions();
-   
+    this.checkForEdges();
+    this.checkForPlayerCollisions()
   }
 
   switchSprite(name) {
-    console.log(name)
-    if (this.image === this.animations[name].image) return
-    this.currentFrame = 0
-    this.image = this.animations[name].image
-    this.frameRate = this.animations[name].frameRate
-    this.frameBuffer = this.animations[name].frameBuffer
-    this.loop = this.animations[name].loop
-    this.currentAnimation = this.animations[name]
+    if (this.image === this.animations[name].image) return;
+    this.currentFrame = 0;
+    this.image = this.animations[name].image;
+    this.frameRate = this.animations[name].frameRate;
+    this.frameBuffer = this.animations[name].frameBuffer;
+    this.loop = this.animations[name].loop;
+    this.currentAnimation = this.animations[name];
   }
 
   updateHitbox() {
     this.hitbox = {
       position: {
-        x: this.position.x + 58,
-        y: this.position.y + 34,
+        x: this.position.x + 10,
+        y: this.position.y + 30,
       },
-      width: 50,
-      height: 53,
+      width: 80,
+      height: 60,
+
     };
+
+    c.fillStyle = 'rgba(255, 0, 0, 0.5)';
+    c.fillRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height);
+
   }
+
+  checkForPlayerCollisions() {
+    if (this.hitbox.position.x <=
+      player.hitbox.position.x + player.hitbox.width &&
+      this.hitbox.position.x + this.hitbox.width >=
+      player.hitbox.position.x &&
+      this.hitbox.position.y + this.hitbox.height >=
+      player.hitbox.position.y &&
+      this.hitbox.position.y <=
+      player.hitbox.position.y + player.hitbox.height
+    ) { console.log('hit') }
+
+    else { console.log('miss') }
+
+  }
+
 
   checkForHorizontalCollisions() {
     for (let i = 0; i < this.collisionBlocks.length; i++) {
@@ -72,19 +91,21 @@ class Player extends Sprite {
       // if a collision exists
       if (
         this.hitbox.position.x <=
-          collisionBlock.position.x + collisionBlock.width &&
+        collisionBlock.position.x + collisionBlock.width &&
         this.hitbox.position.x + this.hitbox.width >=
-          collisionBlock.position.x &&
+        collisionBlock.position.x &&
         this.hitbox.position.y + this.hitbox.height >=
-          collisionBlock.position.y &&
+        collisionBlock.position.y &&
         this.hitbox.position.y <=
-          collisionBlock.position.y + collisionBlock.height
+        collisionBlock.position.y + collisionBlock.height
       ) {
         // collision on x axis going to the left
         if (this.velocity.x < -0) {
           const offset = this.hitbox.position.x - this.position.x;
           this.position.x =
             collisionBlock.position.x + collisionBlock.width - offset + 0.01;
+          this.movingRight = true;
+
           break;
         }
 
@@ -92,6 +113,7 @@ class Player extends Sprite {
           const offset =
             this.hitbox.position.x - this.position.x + this.hitbox.width;
           this.position.x = collisionBlock.position.x - offset - 0.01;
+          this.movingRight = false;
           break;
         }
       }
@@ -110,19 +132,20 @@ class Player extends Sprite {
       // if a collision exists
       if (
         this.hitbox.position.x <=
-          collisionBlock.position.x + collisionBlock.width &&
+        collisionBlock.position.x + collisionBlock.width &&
         this.hitbox.position.x + this.hitbox.width >=
-          collisionBlock.position.x &&
+        collisionBlock.position.x &&
         this.hitbox.position.y + this.hitbox.height >=
-          collisionBlock.position.y &&
+        collisionBlock.position.y &&
         this.hitbox.position.y <=
-          collisionBlock.position.y + collisionBlock.height
+        collisionBlock.position.y + collisionBlock.height
       ) {
         if (this.velocity.y < 0) {
           this.velocity.y = 0;
           const offset = this.hitbox.position.y - this.position.y;
           this.position.y =
             collisionBlock.position.y + collisionBlock.height - offset + 0.01;
+
 
           break;
         }
@@ -138,4 +161,32 @@ class Player extends Sprite {
       }
     }
   }
+
+  // Method to check if there is a ground in front of the enemy's direction
+  checkForEdges() {
+    const nextX = this.movingRight ? this.hitbox.position.x + this.hitbox.width + 1 : this.hitbox.position.x - 1;
+    const nextY = this.hitbox.position.y + this.hitbox.height + 1;
+
+    let isGroundInFront = false;
+
+    for (let i = 0; i < this.collisionBlocks.length; i++) {
+      const collisionBlock = this.collisionBlocks[i];
+
+      if (
+        nextX >= collisionBlock.position.x &&
+        nextX <= collisionBlock.position.x + collisionBlock.width &&
+        nextY >= collisionBlock.position.y &&
+        nextY <= collisionBlock.position.y + collisionBlock.height
+      ) {
+        isGroundInFront = true;
+        break;
+      }
+    }
+
+    // If there is no ground in front, change the direction
+    if (!isGroundInFront) this.movingRight = !this.movingRight;
+  }
+
+
 }
+// Rest of your methods...
