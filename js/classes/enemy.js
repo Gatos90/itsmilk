@@ -63,8 +63,8 @@ class Enemy extends Sprite {
 
     };
 
-    c.fillStyle = 'rgba(255, 0, 0, 0.5)';
-    c.fillRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height);
+    /* c.fillStyle = 'rgba(255, 0, 0, 0.5)';
+    c.fillRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height); */
 
   }
 

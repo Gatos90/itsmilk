@@ -1,37 +1,50 @@
-// Define a class called "Player"
-class Player extends Sprite {
+let movingRight = false;
+
+class Enemy extends Sprite {
   constructor({
     collisionBlocks = [],
-    imageSrc, // Define an optional parameter for the constructor called "collisionBlocks" with a default value of an empty array
+    imageSrc,
     frameRate,
     animations,
+    patrolRange = { start: 200, end: 800 }, // The range in which the enemy patrols
   }) {
     super({ imageSrc, frameRate, animations });
-    // Set the initial position and size of the player object
+
+    const xPos =
+      Math.random() * (patrolRange.end - patrolRange.start) + patrolRange.start;
+
     this.position = {
-      x: 200,
+      x: xPos,
       y: 200,
     };
     this.velocity = {
-      x: 0,
-      y: 1,
+      x: 1, // The enemy always moves horizontally
+      y: 0,
     };
 
-    // Calculate the position of the bottom side of the player object
     this.sides = {
-      bottom: this.position.y + this.height, // Add a sides property to keep track of the bottom side of the player object
+      bottom: this.position.y + this.height,
     };
-    this.collisionBlocks = collisionBlocks; // Assign the value of collisionBlocks to a property called "collisionBlocks" of the current object
-    // Set the gravity value for the player object
-    this.gravity = 1; // Set the value of gravity for the player object
-    this.isJumping = false; // Set isJumping boolean flag to false initially
-    this.runningSpeed = 5; // Set running speed to 5 for the player object
+    this.collisionBlocks = collisionBlocks;
+    this.gravity = 1;
+    this.patrolRange = patrolRange;
+    this.movingRight = true; // The direction in which the enemy is currently moving
   }
 
-  // Update the position of the player object
   update() {
-    
-    // Change the position of the player object by its velocity in the y direction
+    // Check if the enemy has reached the end of its patrol range
+    if (this.position.x + this.width > this.patrolRange.end) {
+      this.movingRight = false;
+      this.switchSprite("runLeft");
+    } else if (this.position.x < this.patrolRange.start) {
+      this.movingRight = true;
+      this.switchSprite("runRight");
+    }
+
+    // Update the enemy's velocity based on its direction of movement
+    this.velocity.x = this.movingRight ? 1 : -1;
+
+    // Update the enemy's position
     this.position.x += this.velocity.x;
     this.updateHitbox();
 
@@ -40,32 +53,32 @@ class Player extends Sprite {
     this.updateHitbox();
 
     this.checkForVerticalCollisions();
-   
   }
 
   switchSprite(name) {
-    if (this.image === this.animations[name].image) return
-    this.currentFrame = 0
-    this.image = this.animations[name].image
-    this.frameRate = this.animations[name].frameRate
-    this.frameBuffer = this.animations[name].frameBuffer
-    this.loop = this.animations[name].loop
-    this.currentAnimation = this.animations[name]
+    console.log(name);
+    if (this.image === this.animations[name].image) return;
+    this.currentFrame = 0;
+    this.image = this.animations[name].image;
+    this.frameRate = this.animations[name].frameRate;
+    this.frameBuffer = this.animations[name].frameBuffer;
+    this.loop = this.animations[name].loop;
+    this.currentAnimation = this.animations[name];
   }
 
   updateHitbox() {
     this.hitbox = {
       position: {
-        x: this.position.x + 22,
-        y: this.position.y + 17,
+        x: this.position.x + 58,
+        y: this.position.y + 34,
       },
       width: 50,
-      height: 75,
+      height: 53,
+      
     };
 
-    c.fillStyle = 'rgba(255, 0, 0, 0.5)';
-    c.fillRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height);
   }
+
 
   checkForHorizontalCollisions() {
     for (let i = 0; i < this.collisionBlocks.length; i++) {
@@ -125,7 +138,8 @@ class Player extends Sprite {
           const offset = this.hitbox.position.y - this.position.y;
           this.position.y =
             collisionBlock.position.y + collisionBlock.height - offset + 0.01;
-
+          this.movingRight = false;
+          this.switchSprite("runLeft");
           break;
         }
 
@@ -140,17 +154,5 @@ class Player extends Sprite {
       }
     }
   }
-
-
-  updateCamerabox() {
-    this.camerabox = {
-      position: {
-        x: this.position.x - 50,
-        y: this.position.y,
-      },
-      width: 200,
-      height: 80,
-    }
-  }
-
 }
+// Rest of your methods...

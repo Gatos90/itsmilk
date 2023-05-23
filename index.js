@@ -8,12 +8,7 @@ const c = canvas.getContext("2d");
 canvas.width = 64 * 16;
 canvas.height = 64 * 9;
 
-const scaledCanvs = {
-  width: canvas.width / 4,
-  height: canvas.height / 4,
-};
-
-let parsedCollisions;
+const Collisions2D = []
 let collisionBlocks;
 let background;
 let doors;
@@ -187,7 +182,7 @@ let levels = {
           x: 0,
           y: 0,
         },
-        imageSrc: "./img/background.png",
+        imageSrc: "./img/backgroundLevel3.png",
       });
 
       doors = [
@@ -222,12 +217,6 @@ function animate() {
   // Call the `animate()` function recursively using requestAnimationFrame()
   window.requestAnimationFrame(animate);
 
-  c.save();    
-  c.scale(4, 4);  
-  c.translate(0, -background.image.height + scaledCanvs.height);
-  background.draw(); 
-    collisionBlocks.forEach((collisionBlock) => collisionBlock.update())
-  c.restore();
   const msNow = window.performance.now();
   const msPassed = msNow - msPrev;
 
@@ -239,10 +228,11 @@ function animate() {
 
   // Clear the canvas with white color in each frame
 
-  
+  background.draw();
 
-  
-
+  doors.forEach((collisionBlock) => {
+    collisionBlock.draw();
+  });
 
   // Draw and update the player object in each frame of the animation
   player.draw();
@@ -262,9 +252,6 @@ function animate() {
   else if (keys.d.isPressed) moveRight();
 
   c.save();
-  doors.forEach((collisionBlock) => {
-    collisionBlock.draw();
-  });
   c.globalAlpha = overlay.opacity;
   c.fillStyle = "black";
   c.fillRect(0, 0, canvas.width, canvas.height);

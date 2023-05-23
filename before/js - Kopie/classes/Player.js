@@ -30,7 +30,7 @@ class Player extends Sprite {
 
   // Update the position of the player object
   update() {
-    
+  
     // Change the position of the player object by its velocity in the y direction
     this.position.x += this.velocity.x;
     this.updateHitbox();
@@ -44,6 +44,7 @@ class Player extends Sprite {
   }
 
   switchSprite(name) {
+    console.log(name)
     if (this.image === this.animations[name].image) return
     this.currentFrame = 0
     this.image = this.animations[name].image
@@ -56,15 +57,12 @@ class Player extends Sprite {
   updateHitbox() {
     this.hitbox = {
       position: {
-        x: this.position.x + 22,
-        y: this.position.y + 17,
+        x: this.position.x + 58,
+        y: this.position.y + 34,
       },
       width: 50,
-      height: 75,
+      height: 53,
     };
-
-    c.fillStyle = 'rgba(255, 0, 0, 0.5)';
-    c.fillRect(this.hitbox.position.x, this.hitbox.position.y, this.hitbox.width, this.hitbox.height);
   }
 
   checkForHorizontalCollisions() {
@@ -140,17 +138,4 @@ class Player extends Sprite {
       }
     }
   }
-
-
-  updateCamerabox() {
-    this.camerabox = {
-      position: {
-        x: this.position.x - 50,
-        y: this.position.y,
-      },
-      width: 200,
-      height: 80,
-    }
-  }
-
 }

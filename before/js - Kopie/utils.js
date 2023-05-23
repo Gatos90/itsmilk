@@ -31,26 +31,6 @@ Array.prototype.createObjectsFrom2D = function () {
     return objects // Returning the final array of created objects.
   }
 
-  
-  for (let i = 0; i < collisionsLevel3.length; i += 36) {
-   Collisions2D.push(collisionsLevel3.slice(i, i + 36))
-  }
-
-  Collisions2D.forEach((row, y) => {
-    row.forEach((symbol, x) => {
-      if (symbol === 202) {
-        collisionBlocks.push(
-          new CollisionBlock({
-            position: {
-              x: x * 16,
-              y: y * 16,
-            },
-          }) 
-        )
-      }
-    })
-  })
-
 
   function collision({ 
     object1, 
